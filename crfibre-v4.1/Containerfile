@@ -1,0 +1,20 @@
+# CR Fibre v4 — image légère, pas de compilation native
+FROM python:3.12-alpine
+
+WORKDIR /app
+
+# Dépendances : Flask (web) + openpyxl (xlsx) + waitress (serveur WSGI pur-python)
+RUN pip install --no-cache-dir flask==3.0.3 openpyxl==3.1.5 waitress==3.0.0
+
+COPY app.py crdata.py db.py mailer.py export.py ./
+COPY templates ./templates
+COPY static ./static
+
+# Données persistées via volume monté sur /data
+ENV CRFIBRE_DB=/data/crfibre.sqlite3 \
+    CRFIBRE_PORT=8470
+VOLUME ["/data"]
+EXPOSE 8470
+
+# Serveur de prod léger (pas le serveur de dev Flask)
+CMD ["waitress-serve", "--host=0.0.0.0", "--port=8470", "app:app"]

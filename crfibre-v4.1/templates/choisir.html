@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Nouveau CR — choix{% endblock %}
+{% block content %}
+<h2>Type d'intervention</h2>
+<div class="grid">
+  {% for t in templates %}
+  <a class="tile {{ 'tile-libre' if t['key'].startswith('libre') else '' }}" href="{{ url_for('nouveau', key=t['key']) }}">
+    {{ t['label'] }}
+  </a>
+  {% endfor %}
+</div>
+{% endblock %}
