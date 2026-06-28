@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}CR Fibre — Accueil{% endblock %}
+{% block content %}
+
+<a class="btn btn-primary btn-block" href="{{ url_for('choisir') }}">＋ Nouveau compte-rendu</a>
+
+<div class="score-card">
+  <div class="score-big">{{ mois_points }}</div>
+  <div class="score-lbl">points ce mois · {{ mois_nb }} ticket{{ 's' if mois_nb > 1 else '' }}</div>
+  <a class="score-link" href="{{ url_for('export_page') }}">Exporter →</a>
+</div>
+
+<h2>Derniers CR</h2>
+
+{% if not rows %}
+  <p class="muted">Aucun compte-rendu pour l'instant.</p>
+{% endif %}
+
+<ul class="list">
+  {% for r in rows %}
+  <li>
+    <a href="{{ url_for('ticket', iid=r['id']) }}" class="card">
+      <div class="card-head">
+        <span class="card-title">{{ r['code'] or r['template_label'] }}</span>
+        <span class="pts">{{ r['points'] }} pt</span>
+      </div>
+      <div class="card-meta">
+        {% if r['code'] %}<span>{{ r['template_label'] }} ·</span>{% endif %}
+        <span>{{ r['date_intervention'] or r['created_at'][:10] }}</span>
+        {% if r['equipe'] %}<span>· {{ r['equipe'] }}</span>{% endif %}
+      </div>
+      <div class="badges">
+        <span class="badge badge-eff">{{ r['effectif'] }}</span>
+        <span class="badge badge-st st-{{ r['statut']|replace(' ','')|lower }}">{{ r['statut'] }}</span>
+        {% if r['statut'] != 'En cours' %}
+          <span class="badge {{ 'badge-mail-ok' if r['mail_envoye'] else 'badge-mail-ko' }}">
+            {{ 'mail ✓' if r['mail_envoye'] else 'mail ✗' }}
+          </span>
+        {% endif %}
+      </div>
+    </a>
+  </li>
+  {% endfor %}
+</ul>
+{% endblock %}

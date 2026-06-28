@@ -1,0 +1,22 @@
+# CR Fibre v4 — Quadlet (rootless)
+# À placer dans : ~/.config/containers/systemd/crfibre.container
+# Puis : systemctl --user daemon-reload && systemctl --user start crfibre.service
+
+[Unit]
+Description=CR Fibre (comptes-rendus FTTH)
+After=network-online.target
+
+[Container]
+Image=localhost/crfibre:latest
+ContainerName=crfibre
+# Publié uniquement sur localhost : exposition gérée par Caddy / Tailscale
+PublishPort=127.0.0.1:8470:8470
+EnvironmentFile=%h/crfibre/.env
+Volume=%h/crfibre/data:/data:Z
+
+[Service]
+Restart=always
+TimeoutStartSec=60
+
+[Install]
+WantedBy=default.target
