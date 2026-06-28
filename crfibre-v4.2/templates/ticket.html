@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}CR #{{ t['id'] }}{% endblock %}
+{% block content %}
+
+<div class="card-head">
+  <h2 style="margin:0">{% if t['code'] %}<span id="cr-code">{{ t['code'] }}</span>{% else %}{{ t['template_label'] }}{% endif %}</h2>
+  <span class="pts">{{ t['points'] }} pt</span>
+</div>
+{% if t['code'] %}<p class="muted small" style="margin:.1rem 0 .4rem">{{ t['template_label'] }}</p>{% endif %}
+
+<div class="badges" style="margin:.4rem 0 1rem">
+  <span class="badge badge-eff">{{ t['effectif'] }}</span>
+  <span class="badge badge-st st-{{ t['statut']|replace(' ','')|lower }}">{{ t['statut'] }}</span>
+  {% if t['statut'] != 'En cours' %}
+    <span class="badge {{ 'badge-mail-ok' if t['mail_envoye'] else 'badge-mail-ko' }}">
+      {{ 'envoyé via ' ~ t['mail_provider'] if t['mail_envoye'] else 'mail non envoyé' }}
+    </span>
+  {% endif %}
+</div>
+
+<h3>Compte-rendu</h3>
+<pre class="cr-body" id="cr-body">{{ t['corps'] }}</pre>
+<button type="button" id="copy-cr" class="btn btn-ghost btn-block">Copier le CR</button>
+<button type="button" id="share-cr" class="btn btn-ghost btn-block">Partager → Praxedo / Notes</button>
+
+{% if t['destinataires'] %}
+  <p class="muted">Destinataires : {{ t['destinataires'] }}</p>
+{% endif %}
+
+{% if t['statut'] != 'En cours' %}
+<form method="post" action="{{ url_for('renvoyer', iid=t['id']) }}">
+  <button type="submit" class="btn btn-ghost btn-block">Renvoyer le mail</button>
+</form>
+{% endif %}
+
+<a href="{{ url_for('index') }}" class="btn btn-ghost btn-block">← Retour</a>
+{% endblock %}

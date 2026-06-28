@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}{{ tpl['label'] }}{% endblock %}
+{% block content %}
+<h2>{{ tpl['label'] }}</h2>
+
+<form method="post" class="cr-form">
+
+  <label>Code intervention *
+    <input type="text" name="code" placeholder="C35536166-01" autocomplete="off"
+           autocapitalize="characters" required>
+  </label>
+
+  <label>Date d'intervention
+    <input type="date" name="date_intervention" value="{{ today }}" required>
+  </label>
+
+  <label>Équipe
+    <input type="text" name="equipe" list="equipes-list" value="{{ equipes[0] if equipes else '' }}"
+           placeholder="Patrick/Erwan">
+    <datalist id="equipes-list">
+      {% for e in equipes %}<option value="{{ e }}">{% endfor %}
+    </datalist>
+  </label>
+
+  <label>Effectif
+    <select name="effectif" id="effectif">
+      {% for e in effectifs %}
+        <option value="{{ e }}"{% if e == 'Binôme' %} selected{% endif %}>{{ e }} ({{ points[e] }} pt)</option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <hr>
+
+  {% for f in tpl['fields'] %}
+    <label>{{ f['label'] }}{% if f.get('required') %} *{% endif %}
+      {% if f['type'] == 'select' %}
+        <select name="{{ f['name'] }}">
+          <option value=""></option>
+          {% for o in f['options'] %}<option value="{{ o }}">{{ o }}</option>{% endfor %}
+        </select>
+      {% elif f['type'] == 'textarea' %}
+        <textarea name="{{ f['name'] }}" rows="4" placeholder="{{ f.get('ph','') }}"
+                  {% if f.get('required') %}required{% endif %}></textarea>
+      {% elif f['type'] == 'number' %}
+        <input type="number" inputmode="decimal" step="any" name="{{ f['name'] }}"
+               placeholder="{{ f.get('ph','') }}" {% if f.get('required') %}required{% endif %}>
+      {% else %}
+        <input type="text" name="{{ f['name'] }}"
+               placeholder="{{ f.get('ph','') }}" {% if f.get('required') %}required{% endif %}>
+      {% endif %}
+    </label>
+  {% endfor %}
+
+  <hr>
+
+  <label>Statut
+    <select name="statut" id="statut">
+      {% for s in statuts %}<option value="{{ s }}">{{ s }}</option>{% endfor %}
+    </select>
+  </label>
+
+  <label id="note-wrap" style="display:none">DPR — date prochain RDV / passage travaux
+    <input type="date" name="dpr">
+  </label>
+
+  <label>Consigne technicien suivant (optionnel)
+    <textarea name="consigne" rows="2"></textarea>
+  </label>
+
+  <p class="hint">Astuce terrain : touchez 🎤 pour dicter un champ (mains libres). Mail envoyé automatiquement pour tout statut sauf « En cours ».</p>
+
+  <button type="submit" class="btn btn-primary btn-block">Enregistrer / Envoyer</button>
+  <a href="{{ url_for('choisir') }}" class="btn btn-ghost btn-block">Annuler</a>
+</form>
+{% endblock %}
